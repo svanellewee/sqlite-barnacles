@@ -3,7 +3,7 @@ SQLITE_EXTENSION_INIT1
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include "base64.h"
 static const unsigned char *lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"\
                                      "abcdefghijklmnopqrstuvwxyz"\
                                      "0123456789+/";
