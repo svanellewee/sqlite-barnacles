@@ -32,7 +32,7 @@ static inline int index_char(unsigned char c) {
 size_t decode(unsigned const char *input_string, size_t input_string_length, unsigned const char **output_string){
     size_t output_string_length = DECODED_OUTPUT_LENGTH(input_string_length); 
     //char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
-    char *output = (unsigned char*)calloc(sizeof(unsigned char), output_string_length); 
+    char *output = (unsigned char*)CALLOC(sizeof(unsigned char), output_string_length); 
     memset(output, '\0', output_string_length * sizeof(unsigned char));
     for(int input_count = 0, output_count = 0; input_count < input_string_length; input_count += 4, output_count += 3){
         output[output_count]   = SECTIONX(index_char(input_string[input_count]),  index_char(input_string[input_count+1]));
@@ -59,7 +59,7 @@ size_t encode(unsigned const char *input_string, size_t input_string_length, uns
         int input_count = 0, output_count=0;
         size_t output_string_length = ENCODED_OUTPUT_LENGTH(input_string_length);
         //unsigned char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
-        unsigned char *output = (unsigned char*)calloc(sizeof(unsigned char), output_string_length); 
+        unsigned char *output = (unsigned char*)CALLOC(sizeof(unsigned char), output_string_length); 
         memset(output, '\0', output_string_length * sizeof(unsigned char));
         unsigned const char *cur_pos = input_string;
 	unsigned char next_string = '\0';
