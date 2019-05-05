@@ -6,8 +6,8 @@ static const unsigned char *lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"\
                                      "abcdefghijklmnopqrstuvwxyz"\
                                      "0123456789+/";
 
-#ifndef MALLOC
-#define MALLOC(X) (malloc(X))
+#ifndef CALLOC
+#define CALLOC(X, Y) (calloc(X, Y))
 #endif 
 
 /*
@@ -29,9 +29,10 @@ static inline int index_char(unsigned char c) {
   }
 }
 
-size_t decode(unsigned const char *input_string, size_t input_string_length, unsigned char **output_string){
+size_t decode(unsigned const char *input_string, size_t input_string_length, unsigned const char **output_string){
     size_t output_string_length = DECODED_OUTPUT_LENGTH(input_string_length); 
-    char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
+    //char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
+    char *output = (unsigned char*)calloc(sizeof(unsigned char), output_string_length); 
     memset(output, '\0', output_string_length * sizeof(unsigned char));
     for(int input_count = 0, output_count = 0; input_count < input_string_length; input_count += 4, output_count += 3){
         output[output_count]   = SECTIONX(index_char(input_string[input_count]),  index_char(input_string[input_count+1]));
@@ -54,10 +55,11 @@ size_t decode(unsigned const char *input_string, size_t input_string_length, uns
 #define SECTIONC(Y,Z) ((((Y) & 0b00001111) << 2) | (((Z) & 0b11000000) >> 6))
 #define SECTIOND(Z)     ((Z) & 0b00111111)
 #define ENCODED_OUTPUT_LENGTH(X)  ((((((X) - 1) / 3 ) * 4) + 4));
-size_t encode(unsigned const char *input_string, size_t input_string_length, unsigned char **output_string) {
+size_t encode(unsigned const char *input_string, size_t input_string_length, unsigned const char **output_string) {
         int input_count = 0, output_count=0;
         size_t output_string_length = ENCODED_OUTPUT_LENGTH(input_string_length);
-        unsigned char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
+        //unsigned char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
+        unsigned char *output = (unsigned char*)calloc(sizeof(unsigned char), output_string_length); 
         memset(output, '\0', output_string_length * sizeof(unsigned char));
         unsigned const char *cur_pos = input_string;
 	unsigned char next_string = '\0';

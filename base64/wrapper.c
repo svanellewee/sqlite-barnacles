@@ -6,7 +6,7 @@ SQLITE_EXTENSION_INIT1
 #include "base64.h"
 
 // Poor man's dependency injection..
-#define MALLOC(X) (sqlite3_malloc(X))
+#define CALLOC(X,Y) (sqlite3_malloc(X*Y))
 
 static void base64_encode(
       sqlite3_context *context,
