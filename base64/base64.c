@@ -85,7 +85,6 @@ size_t encode(unsigned const char *input_string, size_t input_string_length, uns
         return output_string_length;
 }
 
-
 static void base64_encode(
       sqlite3_context *context,
       int argc,

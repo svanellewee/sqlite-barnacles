@@ -11,5 +11,5 @@ endif
 base64.${DL_SUFFIX}: base64.c
 	${CC} -fPIC  -g -shared $< -o $@
 
-clean: *.so
-	rm -fr $<
+clean: 
+	rm -fr *.so *.o

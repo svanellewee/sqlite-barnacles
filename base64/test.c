@@ -90,8 +90,6 @@ int main(int argv, char** argc) {
         unsigned const char *result = NULL;
         unsigned const char *result2 = NULL;
         while(test->encoded != NULL){
-                //printf("%s vs %s\n", test->encoded, test->decoded);
-                //in_printf("clear length = %d\n", strlen(test->decoded));
                 decode(test->encoded, strlen(test->encoded), &result2);
                 printf("decode() -> %s\n", test->encoded);
 		if((strlen(test->decoded) == strlen(result2)) &&
