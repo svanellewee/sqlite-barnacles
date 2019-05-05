@@ -87,29 +87,29 @@ test_cases tests = {
 
 int main(int argv, char** argc) {
         struct test_case *test = tests; 
-        unsigned const char *result = NULL;
-        unsigned const char *result2 = NULL;
+        unsigned const char *decode_result = NULL;
+        unsigned const char *encode_result = NULL;
         while(test->encoded != NULL){
-                decode(test->encoded, strlen(test->encoded), &result2);
+                decode(test->encoded, strlen(test->encoded), &encode_result);
                 printf("decode() -> %s\n", test->encoded);
-		if((strlen(test->decoded) == strlen(result2)) &&
-				(strncmp(test->decoded, result2, strlen(test->decoded)) == 0)) {
+		if((strlen(test->decoded) == strlen(encode_result)) &&
+				(strncmp(test->decoded, encode_result, strlen(test->decoded)) == 0)) {
 			printf("\e[32m" "decode passes\n" "\e[0m");
 		} else {
-			printf("\e[31m" "decode fails: \n%s VS \n[%s] \n" "\e[0m", test->decoded, result2);
+			printf("\e[31m" "decode fails: \n%s VS \n[%s] \n" "\e[0m", test->decoded, encode_result);
 		}
-                free((void*)result2);
+                free((void*)encode_result);
 
-                encode(test->decoded, strlen(test->decoded), &result);
+                encode(test->decoded, strlen(test->decoded), &decode_result);
                 printf("encode() -> %s\n", test->decoded);
-		if( (strlen(test->encoded) == strlen(result) ) &&
-					(strncmp(test->encoded, result, strlen(test->encoded)) == 0)) {
+		if( (strlen(test->encoded) == strlen(decode_result) ) &&
+					(strncmp(test->encoded, decode_result, strlen(test->encoded)) == 0)) {
 			printf("\e[32m" "encode passes\n" "\e[0m");
 		} else {
-			printf("\e[31m" "encode fails \n%s VS \n[%s] \n" "\e[0m", test->encoded, result);
-			printf("\e[31m" "encode length comparison in(%d) -> %d VS [%d] \n" "\e[0m",strlen(test->decoded), strlen(test->encoded), strlen(result));
+			printf("\e[31m" "encode fails \n%s VS \n[%s] \n" "\e[0m", test->encoded, decode_result);
+			printf("\e[31m" "encode length comparison in(%d) -> %d VS [%d] \n" "\e[0m", strlen(test->decoded), strlen(test->encoded), strlen(decode_result));
 		}
-                free((void*)result);
+                free((void*)decode_result);
 
                 test++;
                 printf("\n");

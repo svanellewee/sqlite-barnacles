@@ -32,7 +32,7 @@ static inline int index_char(unsigned char c) {
 size_t decode(unsigned const char *input_string, size_t input_string_length, unsigned char **output_string){
     size_t output_string_length = DECODED_OUTPUT_LENGTH(input_string_length); 
     char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
-    memset(output, '\0', output_string_length);
+    memset(output, '\0', output_string_length * sizeof(unsigned char));
     for(int input_count = 0, output_count = 0; input_count < input_string_length; input_count += 4, output_count += 3){
         output[output_count]   = SECTIONX(index_char(input_string[input_count]),  index_char(input_string[input_count+1]));
         output[output_count+1] = SECTIONY(index_char(input_string[input_count+1]),index_char(input_string[input_count+2]));
@@ -60,10 +60,12 @@ size_t encode(unsigned const char *input_string, size_t input_string_length, uns
         unsigned char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
         memset(output, '\0', output_string_length * sizeof(unsigned char));
         unsigned const char *cur_pos = input_string;
+	unsigned char next_string = '\0';
+	unsigned char next_next_string = '\0';
         for(output_count=0, input_count =0; output_count < output_string_length; output_count+=4, input_count+=3) {
                 output[output_count] = lookup[SECTIONA(input_string[input_count])];
-                unsigned char next_string = '\0';
-                unsigned char next_next_string = '\0';
+                next_string = '\0';
+                next_next_string = '\0';
                 if ((input_string[input_count+1])) {
                     next_string = input_string[input_count+1];
                     if (input_string[input_count+2]) {

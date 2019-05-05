@@ -11,5 +11,8 @@ endif
 base64.${DL_SUFFIX}: base64.c wrapper.c
 	${CC} -fPIC  -g -shared *.c -o $@
 
+test:  clean
+	${CC} -g *.c -o test && ./test
+
 clean: 
-	rm -fr *.so *.o
+	rm -fr *.so *.o ./test
