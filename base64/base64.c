@@ -1,13 +1,14 @@
 #include "sqlite3ext.h"
-SQLITE_EXTENSION_INIT1
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "base64.h"
 static const unsigned char *lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"\
                                      "abcdefghijklmnopqrstuvwxyz"\
                                      "0123456789+/";
 
+#ifndef MALLOC
+#define MALLOC(X) (malloc(X))
+#endif 
 
 /*
 ........X..........Y...,,,....Z....
@@ -30,7 +31,7 @@ static inline int index_char(unsigned char c) {
 
 size_t decode(unsigned const char *input_string, size_t input_string_length, unsigned char **output_string){
     size_t output_string_length = DECODED_OUTPUT_LENGTH(input_string_length); 
-    char *output = (unsigned char*)sqlite3_malloc(sizeof(unsigned char) * output_string_length); 
+    char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
     memset(output, '\0', output_string_length);
     for(int input_count = 0, output_count = 0; input_count < input_string_length; input_count += 4, output_count += 3){
         output[output_count]   = SECTIONX(index_char(input_string[input_count]),  index_char(input_string[input_count+1]));
@@ -56,7 +57,7 @@ size_t decode(unsigned const char *input_string, size_t input_string_length, uns
 size_t encode(unsigned const char *input_string, size_t input_string_length, unsigned char **output_string) {
         int input_count = 0, output_count=0;
         size_t output_string_length = ENCODED_OUTPUT_LENGTH(input_string_length);
-        unsigned char *output = (unsigned char*)sqlite3_malloc(sizeof(unsigned char) * output_string_length); 
+        unsigned char *output = (unsigned char*)MALLOC(sizeof(unsigned char) * output_string_length); 
         memset(output, '\0', output_string_length * sizeof(unsigned char));
         unsigned const char *cur_pos = input_string;
         for(output_count=0, input_count =0; output_count < output_string_length; output_count+=4, input_count+=3) {
@@ -85,60 +86,3 @@ size_t encode(unsigned const char *input_string, size_t input_string_length, uns
         return output_string_length;
 }
 
-static void base64_encode(
-      sqlite3_context *context,
-      int argc,
-      sqlite3_value **argv
-    ){
-      unsigned char *output_string = NULL;
-      const unsigned char *input_string = NULL;
-      size_t input_string_length = 0, output_string_length = 0;
-
-      if( sqlite3_value_type(argv[0]) == SQLITE_NULL ) return;
-      input_string = (const unsigned char*)sqlite3_value_text(argv[0]);
-      input_string_length = sqlite3_value_bytes(argv[0]);
-      output_string_length = encode(input_string, input_string_length, &output_string);
-      if( output_string == NULL ){
-          sqlite3_result_error_nomem(context);
-          return;
-      }
-      sqlite3_result_text(context, output_string, output_string_length, SQLITE_TRANSIENT);
-      sqlite3_free(output_string);
-}
-
-static void base64_decode(
-      sqlite3_context *context,
-      int argc,
-      sqlite3_value **argv
-    ){
-      unsigned char *output_string = NULL;
-      const unsigned char *input_string = NULL;
-      size_t input_string_length = 0, output_string_length = 0;
-
-      if( sqlite3_value_type(argv[0]) == SQLITE_NULL ) return;
-      input_string = (const unsigned char*)sqlite3_value_text(argv[0]);
-      input_string_length = sqlite3_value_bytes(argv[0]);
-      output_string_length = decode(input_string, input_string_length, &output_string);
-      if( output_string == NULL ){
-          sqlite3_result_error_nomem(context);
-          return;
-      }
-      sqlite3_result_text(context, output_string, output_string_length, SQLITE_TRANSIENT);
-      sqlite3_free(output_string);
-}
-
-#ifdef _WIN32
-    __declspec(dllexport)
-#endif
-int sqlite3_base_init(
-      sqlite3 *db,
-      char **pzErrMsg,
-      const sqlite3_api_routines *pApi
-){
-      int rc = SQLITE_OK;
-      SQLITE_EXTENSION_INIT2(pApi);
-      (void)pzErrMsg;  /* Unused parameter */
-      rc = sqlite3_create_function(db, "base64_encode", 1, SQLITE_UTF8, 0, base64_encode, 0, 0);
-      rc = sqlite3_create_function(db, "base64_decode", 1, SQLITE_UTF8, 0, base64_decode, 0, 0);
-      return rc;
-}

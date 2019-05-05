@@ -8,8 +8,8 @@ ifeq ($(UNAME_S),Darwin)
 	DL_SUFFIX = dylib
 endif
 
-base64.${DL_SUFFIX}: base64.c
-	${CC} -fPIC  -g -shared $< -o $@
+base64.${DL_SUFFIX}: base64.c wrapper.c
+	${CC} -fPIC  -g -shared *.c -o $@
 
 clean: 
 	rm -fr *.so *.o
